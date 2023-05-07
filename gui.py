@@ -1,0 +1,88 @@
+import tkinter as tk
+from tkinter import filedialog
+from attributes import generate_sql_script, save_sql, read_config
+import os
+import json
+import datetime
+import attributes
+
+CONFIG_FILE = 'config.json'
+
+def load_config():
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, 'r') as f:
+            return json.load(f)
+    return {}
+
+def save_config(config):
+    with open(CONFIG_FILE, 'w') as f:
+        json.dump(config, f)
+
+def process_file_path():
+    file_path = file_path_entry.get()
+    output_folder = output_folder_entry.get()
+    
+    update_statements = generate_sql_script(file_path, attributes.read_config())
+    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S_%f')
+    save_sql(update_statements, os.path.join(output_folder, f'sql_scripts_{timestamp}.sql'))
+    
+    config = {
+        'file_path': file_path,
+        'output_folder': output_folder
+    }
+    save_config(config)
+    
+    result_text.delete(1.0, tk.END)
+    result_text.insert(tk.END, "\n".join(update_statements))
+
+def select_file():
+    file_path = filedialog.askopenfilename()
+    file_path_entry.delete(0, tk.END)
+    file_path_entry.insert(0, file_path)
+
+def select_output_folder():
+    output_folder = filedialog.askdirectory()
+    output_folder_entry.delete(0, tk.END)
+    output_folder_entry.insert(0, output_folder)
+
+def select_all(event):
+    result_text.tag_add(tk.SEL, "1.0", tk.END)
+    result_text.mark_set(tk.INSERT, "1.0")
+    result_text.mark_set(tk.INSERT, tk.END)
+    return "break"
+
+root = tk.Tk()
+root.title("Account Type Fixer")
+
+config = load_config()
+
+file_path_label = tk.Label(root, text="File path:")
+file_path_label.pack()
+
+file_path_entry = tk.Entry(root, width=50)
+file_path_entry.insert(0, config.get('file_path', ''))
+file_path_entry.pack()
+
+select_file_button = tk.Button(root, text="Select File", command=select_file)
+select_file_button.pack()
+
+output_folder_label = tk.Label(root, text="Output folder:")
+output_folder_label.pack()
+
+output_folder_entry = tk.Entry(root, width=50)
+output_folder_entry.insert(0, config.get('output_folder', ''))
+output_folder_entry.pack()
+
+select_output_folder_button = tk.Button(root, text="Select Output Folder", command=select_output_folder)
+select_output_folder_button.pack()
+
+process_button = tk.Button(root, text="Process file", command=process_file_path)
+process_button.pack()
+
+result_text = tk.Text(root, wrap=tk.WORD, width=80, height=20)
+result_text.pack()
+
+result_text.bind("<Control-a>", select_all)
+result_text.bind("<Control-A>", select_all)
+
+root.mainloop()

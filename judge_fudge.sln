@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33627.172
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "judge_fudge", "judge_fudge.pyproj", "{0D9BB1AC-3A51-4105-AE2C-D7FEC8CEB899}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0D9BB1AC-3A51-4105-AE2C-D7FEC8CEB899}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D9BB1AC-3A51-4105-AE2C-D7FEC8CEB899}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {12E787C3-78E4-410B-9AA5-1B7A0F5E06B9}
+	EndGlobalSection
+EndGlobal
