@@ -22,14 +22,9 @@ def save_config(config):
 def process_file_path():
     file_path = file_path_entry.get()
     output_folder = output_folder_entry.get()
-    server = server_entry.get()
-    username = username_entry.get()
-    password = password_entry.get()
-    database = database_entry.get()
 
     try:
-        column_b_mappings = attributes.read_config()
-        update_statements = attributes.generate_sql_script(file_path, column_b_mappings, server, username, password, database)
+        update_statements = attributes.generate_sql_script(file_path, attributes.read_config())
         timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S_%f')
         output_file_path = os.path.join(output_folder, f'sql_scripts_{timestamp}.sql')
         attributes.save_sql(update_statements, output_file_path)
@@ -43,7 +38,9 @@ def process_file_path():
         result_text.delete(1.0, tk.END)
         result_text.insert(tk.END, "\n".join(update_statements))
     except Exception as e:
-        messagebox.showerror("Error", f"An error occurred: {e}")
+        result_text.delete(1.0, tk.END)
+        result_text.insert(tk.END, f"An error occurred: {e}")
+
 
 def select_file():
     file_path = filedialog.askopenfilename()
