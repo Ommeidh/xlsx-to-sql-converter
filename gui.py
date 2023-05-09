@@ -1,9 +1,11 @@
 import tkinter as tk
-from tkinter import filedialog
+import tkinter.messagebox as messagebox
+import tkinter.filedialog as filedialog
 import os
 import json
 import datetime
 import attributes
+import pyperclip
 
 CONFIG_FILE = 'config.json'
 
@@ -20,19 +22,23 @@ def save_config(config):
 def process_file_path():
     file_path = file_path_entry.get()
     output_folder = output_folder_entry.get()
-    
-    update_statements = attributes.generate_sql_script(file_path, attributes.read_config())
-    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S_%f')
-    attributes.save_sql(update_statements, os.path.join(output_folder, f'sql_scripts_{timestamp}.sql'))
-    
-    config = {
-        'file_path': file_path,
-        'output_folder': output_folder
-    }
-    save_config(config)
-    
-    result_text.delete(1.0, tk.END)
-    result_text.insert(tk.END, "\n".join(update_statements))
+
+    try:
+        update_statements = attributes.generate_sql_script(file_path, attributes.read_config())
+        timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S_%f')
+        output_file_path = os.path.join(output_folder, f'sql_scripts_{timestamp}.sql')
+        attributes.save_sql(update_statements, output_file_path)
+
+        config = {
+            'file_path': file_path,
+            'output_folder': output_folder
+        }
+        save_config(config)
+
+        result_text.delete(1.0, tk.END)
+        result_text.insert(tk.END, "\n".join(update_statements))
+    except Exception as e:
+        messagebox.showerror("Error", f"An error occurred: {e}")
 
 def select_file():
     file_path = filedialog.askopenfilename()
@@ -49,6 +55,10 @@ def select_all(event):
     result_text.mark_set(tk.INSERT, "1.0")
     result_text.mark_set(tk.INSERT, tk.END)
     return "break"
+
+def copy_to_clipboard():
+    selected_text = result_text.selection_get()
+    pyperclip.copy(selected_text)
 
 root = tk.Tk()
 root.title("Account Type Fixer")
@@ -77,6 +87,9 @@ select_output_folder_button.pack()
 
 process_button = tk.Button(root, text="Process file", command=process_file_path)
 process_button.pack()
+
+copy_button = tk.Button(root, text="Copy to clipboard", command=copy_to_clipboard)
+copy_button.pack()
 
 result_text = tk.Text(root, wrap=tk.WORD, width=80, height=20)
 result_text.pack()
