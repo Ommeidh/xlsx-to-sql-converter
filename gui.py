@@ -22,16 +22,25 @@ def save_config(config):
 def process_file_path():
     file_path = file_path_entry.get()
     output_folder = output_folder_entry.get()
+    server = server_entry.get()
+    database = database_entry.get()
+    user = user_entry.get()
+    password = password_entry.get()
 
     try:
-        update_statements = attributes.generate_sql_script(file_path, attributes.read_config())
+        conn = attributes.connect_to_db(server, database, user, password)
+        update_statements = attributes.generate_sql_script(file_path, attributes.read_config(), conn)
         timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S_%f')
         output_file_path = os.path.join(output_folder, f'sql_scripts_{timestamp}.sql')
         attributes.save_sql(update_statements, output_file_path)
 
         config = {
             'file_path': file_path,
-            'output_folder': output_folder
+            'output_folder': output_folder,
+            'server': server,
+            'database': database,
+            'user': user,
+            'password': password
         }
         save_config(config)
 
@@ -84,6 +93,34 @@ output_folder_entry.pack()
 
 select_output_folder_button = tk.Button(root, text="Select Output Folder", command=select_output_folder)
 select_output_folder_button.pack()
+
+server_label = tk.Label(root, text="Server:")
+server_label.pack()
+
+server_entry = tk.Entry(root, width=50)
+server_entry.insert(0, config.get('server', ''))
+server_entry.pack()
+
+database_label = tk.Label(root, text="Database:")
+database_label.pack()
+
+database_entry = tk.Entry(root, width=50)
+database_entry.insert(0, config.get('database', ''))
+database_entry.pack()
+
+user_label = tk.Label(root, text="User:")
+user_label.pack()
+
+user_entry = tk.Entry(root, width=50)
+user_entry.insert(0, config.get('user', ''))
+user_entry.pack()
+
+password_label = tk.Label(root, text="Password:")
+password_label.pack()
+
+password_entry = tk.Entry(root, width=50, show="*")
+password_entry.insert(0, config.get('password', ''))
+password_entry.pack()
 
 process_button = tk.Button(root, text="Process file", command=process_file_path)
 process_button.pack()
