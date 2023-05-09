@@ -22,9 +22,13 @@ def save_config(config):
 def process_file_path():
     file_path = file_path_entry.get()
     output_folder = output_folder_entry.get()
+    server = server_entry.get()
+    database = database_entry.get()
+    username = username_entry.get()
+    password = password_entry.get()
 
     try:
-        update_statements = attributes.generate_sql_script(file_path, attributes.read_config())
+        update_statements = attributes.generate_sql_script(file_path, attributes.read_config(), server, database, username, password)
         timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S_%f')
         output_file_path = os.path.join(output_folder, f'sql_scripts_{timestamp}.sql')
         attributes.save_sql(update_statements, output_file_path)
@@ -40,7 +44,6 @@ def process_file_path():
     except Exception as e:
         result_text.delete(1.0, tk.END)
         result_text.insert(tk.END, f"An error occurred: {e}")
-
 
 def select_file():
     file_path = filedialog.askopenfilename()
@@ -87,26 +90,28 @@ output_folder_entry.pack()
 select_output_folder_button = tk.Button(root, text="Select Output Folder", command=select_output_folder)
 select_output_folder_button.pack()
 
-# Add Server, Username, Password, and Database input fields
 server_label = tk.Label(root, text="Server:")
 server_label.pack()
+
 server_entry = tk.Entry(root, width=50)
 server_entry.pack()
 
+database_label = tk.Label(root, text="Database:")
+database_label.pack()
+
+database_entry = tk.Entry(root, width=50)
+database_entry.pack()
+
 username_label = tk.Label(root, text="Username:")
 username_label.pack()
+
 username_entry = tk.Entry(root, width=50)
 username_entry.pack()
 
 password_label = tk.Label(root, text="Password:")
 password_label.pack()
-password_entry = tk.Entry(root, width=50, show='*')
+password_entry = tk.Entry(root, width=50, show="*")
 password_entry.pack()
-
-database_label = tk.Label(root, text="Database:")
-database_label.pack()
-database_entry = tk.Entry(root, width=50)
-database_entry.pack()
 
 process_button = tk.Button(root, text="Process file", command=process_file_path)
 process_button.pack()
