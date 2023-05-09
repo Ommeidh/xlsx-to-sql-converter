@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import filedialog
-from attributes import generate_sql_script, save_sql, read_config
 import os
 import json
 import datetime
@@ -22,9 +21,9 @@ def process_file_path():
     file_path = file_path_entry.get()
     output_folder = output_folder_entry.get()
     
-    update_statements = generate_sql_script(file_path, attributes.read_config())
+    update_statements = attributes.generate_sql_script(file_path, attributes.read_config())
     timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S_%f')
-    save_sql(update_statements, os.path.join(output_folder, f'sql_scripts_{timestamp}.sql'))
+    attributes.save_sql(update_statements, os.path.join(output_folder, f'sql_scripts_{timestamp}.sql'))
     
     config = {
         'file_path': file_path,
